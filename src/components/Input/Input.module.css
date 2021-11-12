@@ -1,0 +1,27 @@
+.input__inner {
+    display: inline-block;
+}
+
+.inputOrig, .inputError {
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 4px;
+    width: 200px;
+    margin: 10px 0;
+    height: 16px;
+    color: #000;
+    border-radius: 3px;
+    border: 2px solid #000000;
+}
+
+.inputError {
+    background: #ffbebe;
+}
+
+.errorMessage {
+    color: #900;
+    font-weight: 700;
+}
+
+

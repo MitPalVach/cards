@@ -1,0 +1,43 @@
+.btnOrig, .btnRed {
+    background: #ffffff;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 4px;
+    margin: 10px;
+    color: #1a1a1a;
+    border: 2px solid #1a1a1a;
+    height: 28px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all .5s;
+}
+
+.btnRed {
+    background: #ff6a6a;
+    /*background: #900;*/
+}
+
+.btnRound {
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-weight: 700;
+    transition: all .5s;
+}
+
+.btnOrig:hover, .btnRound:hover {
+    color: #ffffff;
+    background: #1a1a1a;
+    border: 2px solid #ffffff;
+}
+
+.btnOrig:disabled, .btnOrig[aria-disabled] {
+    cursor: auto;
+    border: 2px solid #888;
+    background: #ccc;
+    color: #888;
+    transition: none;
+}
