@@ -1,13 +1,14 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
+import {reducer} from "./reducer";
 import thunk from "redux-thunk";
-import {authReducers} from "./authReducers";
+import {regReducer} from "./registration/registration_reducer";
 
 
-export const rootReducer = combineReducers({
-    auth: authReducers,
+const rootReducer = combineReducers({
+    reducer,
+    registration: regReducer,
 })
 
 export type RootStateType = ReturnType<typeof rootReducer>
 
 export const store = createStore(rootReducer, applyMiddleware(thunk))
-
