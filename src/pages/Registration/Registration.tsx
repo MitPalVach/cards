@@ -99,15 +99,13 @@ const Registration = () => {
                     >Sign Up
                     </Button>
                 </form>
-                {loading && <h4>Loading...</h4>}
+                {loading && <h3>Loading...</h3>}
                 {error && <h4>{error}</h4>}
 
                 <p><NavLink to={'/login'}>Try logging in</NavLink></p>
             </Card>
         </div>
     );
-
-
 };
 
 export default Registration;
