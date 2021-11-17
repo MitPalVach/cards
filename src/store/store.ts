@@ -1,8 +1,8 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
 import {reducer} from "./reducer";
 import thunk from "redux-thunk";
-import {regReducer} from "./registration/registration_reducer";
-import {loginReducer} from "./login/login_reducers";
+import {regReducer} from "./registration/registrationReducer";
+import {loginReducer} from "./login/loginReducers";
 
 
 const rootReducer = combineReducers({

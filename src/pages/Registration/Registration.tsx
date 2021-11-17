@@ -89,7 +89,7 @@ const Registration = () => {
                     {formik.touched.password2 && formik.errors.password2 &&
                     <div style={{color: 'red'}}>{formik.errors.password2}</div>}
 
-                    {isReg ? <Navigate to="/login"/> : null}
+                    {isReg && <Navigate to="/login"/>}
 
                     <small>Enter your email address and your password for sign up</small>
                     <Button

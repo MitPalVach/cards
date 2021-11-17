@@ -1,23 +1,24 @@
-import React, {useState} from 'react';
+import React from 'react';
 import s from './Login.module.css';
 import {useDispatch} from "react-redux";
 import {useTypedSelector} from "../../hooks/useTypedSelector";
 import {useFormik} from "formik";
-import {FormikErrorType} from "../../store/registration/regTypes";
-import {setReg} from "../../store/registration/actions";
+import {FormikErrorType} from "../../store/login/logTypes";
 import {Button, Card, Input} from "antd";
 import {Navigate, NavLink} from "react-router-dom";
+import {setLogin} from "../../store/login/actions";
 
 
 const Login = () => {
     const dispatch = useDispatch()
-    const [isLogin, setIsLogin]=useState(false)
     const {loading, error} = useTypedSelector(state => state.login)
+    const {isLoggedIn} = useTypedSelector(state => state.login)
 
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
+            rememberMe: false,
         },
         validate: (values) => {
             const errors: FormikErrorType = {};
@@ -35,9 +36,8 @@ const Login = () => {
         },
 
         onSubmit: values => {
-            dispatch(setReg(values))
+            dispatch(setLogin(values))
             formik.resetForm()
-            setIsLogin(true)
         },
     })
 
@@ -75,7 +75,7 @@ const Login = () => {
                     {formik.touched.password && formik.errors.password &&
                     <div style={{color: 'red'}}>{formik.errors.password}</div>}
 
-                    {isLogin && <Navigate to={'/dd'}/>}
+                    {isLoggedIn && <Navigate to={'/profile'}/> }
 
                     <small>Enter your email address and your password for sign in</small>
                     <Button

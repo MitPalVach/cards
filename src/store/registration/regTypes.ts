@@ -18,7 +18,7 @@ export type RegBodyType = {
 export type RegState = {
     body: RegBodyType
     loading: boolean
-    error: null | string
+    error?: string
 }
 
 type SetRegAction = {
