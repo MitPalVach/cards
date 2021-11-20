@@ -14,7 +14,7 @@ const Header = () => {
 
     return (
         <Menu mode="horizontal" className={s.menuWrapper}>
-            <Menu.Item><img src={logo} alt={'react'}/></Menu.Item>
+            <Menu.Item><a href={'/friday_project/profile'}><img src={logo} alt={'react'}/></a></Menu.Item>
             <Menu.Item icon={<SnippetsOutlined/>}>Packs list</Menu.Item>
             <Menu.Item icon={<UserOutlined/>}>Profile</Menu.Item>
 
@@ -23,13 +23,13 @@ const Header = () => {
                     <Menu.Item>Игнат Закалинский</Menu.Item>
                     <Menu.Item icon={<GithubOutlined/>}>
                         <a href="https://github.com/iForced" target="_blank" rel="noopener noreferrer">Илья Орсич</a>
-                    </Menu.Item>
+                        </Menu.Item>
                     <Menu.Item icon={<GithubOutlined/>}>
                         <a href="https://github.com/MitPalVach" target="_blank" rel="noopener noreferrer">Дмитрий Вачугов</a>
-                    </Menu.Item>
+                        </Menu.Item>
                     <Menu.Item icon={<GithubOutlined/>}>
                         <a href="https://github.com/NepoGostu" target="_blank" rel="noopener noreferrer">Андрей Зуев</a>
-                    </Menu.Item>
+                        </Menu.Item>
                 </Menu.ItemGroup>
             </SubMenu>
             <SubMenu key="SubMenu1" icon={<SolutionOutlined/>} title="Authorization">
@@ -45,3 +45,29 @@ const Header = () => {
 };
 
 export default Header;
+
+// <NavLink to={'/login'}>Login</NavLink>
+// <NavLink to={'/registration'}>Registration</NavLink>
+// <NavLink to={'/enterpassword'}>Enter password</NavLink>
+// <NavLink to={'/recoverypassword'}>Recovery password</NavLink>
+// <NavLink to={'/profile'}>Profile</NavLink>
+// <NavLink to={'/404'}>404</NavLink>
+
+
+// class App extends React.Component {
+//     state = {
+//         current: 'mail',
+//     };
+//
+//     handleClick = e => {
+//         console.log('click ', e);
+//         this.setState({current: e.key});
+//     };
+//
+//     render() {
+//         const {current} = this.state;
+//         return (
+//
+//         );
+//     }
+// }

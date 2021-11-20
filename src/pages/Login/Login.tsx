@@ -1,51 +1,56 @@
 import React from 'react';
+import {useFormik} from 'formik';
+import {useDispatch, useSelector} from 'react-redux';
+import {loginTC} from '../../store/loginization/loginThunk';
+import {Navigate, NavLink} from 'react-router-dom';
+import {Button, Card, Checkbox, Input} from 'antd';
 import s from './Login.module.css';
-import {useDispatch} from "react-redux";
-import {useTypedSelector} from "../../hooks/useTypedSelector";
-import {useFormik} from "formik";
-import {FormikErrorType} from "../../store/login/logTypes";
-import {Button, Card, Input} from "antd";
-import {Navigate, NavLink} from "react-router-dom";
-import {setLogin} from "../../store/login/actions";
+import {AppRootStateType} from '../../store/store';
 
+
+
+type FormikErrorType = {
+    email?: string
+    password?: string
+    rememberMe?: boolean
+}
 
 const Login = () => {
     const dispatch = useDispatch()
-    const {loading, error} = useTypedSelector(state => state.login)
-    const {isLoggedIn} = useTypedSelector(state => state.login)
-
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.login.isLoggedIn)
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
-            rememberMe: false,
+            rememberMe: false
         },
         validate: (values) => {
             const errors: FormikErrorType = {};
             if (!values.email) {
-                errors.email = 'Login is required';
-            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-                errors.email = 'Incorrect email';
+                errors.email = 'Email is required';
             }
             if (!values.password) {
-                errors.password = 'Password is required';
-            } else if (values.password.length < 7) {
-                errors.password = 'Password at least 7 characters';
+                errors.password = 'Field is required';
+            } else if (values.password.length < 3) {
+                errors.password = 'Must be 3 characters or less';
             }
             return errors;
         },
-
         onSubmit: values => {
-            dispatch(setLogin(values))
+
+            dispatch(loginTC(values))
             formik.resetForm()
         },
     })
+     if (isLoggedIn) {
+         return  <Navigate to="/profile" replace />;
+     }
 
 
     return (
         <div className={s.wrapper}>
             <Card
-                style={{minWidth: '413px'}}
+                style={{width: '413px'}}
                 bodyStyle={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -54,47 +59,39 @@ const Login = () => {
                 }}
             >
                 <h2>IT-Incubator</h2>
-                <p>Sign In</p>
                 <form onSubmit={formik.handleSubmit} className={s.form}>
-                    <Input
+                    <span> Enter your email: <Input
                         placeholder={'Email'}
                         name={'email'}
                         value={formik.values.email}
                         onChange={formik.handleChange}
                     />
-                    {formik.touched.email && formik.errors.email &&
-                    <div style={{color: 'red'}}>{formik.errors.email}</div>}
-
-                    <Input
-                        placeholder={'Password'}
-                        name={'password'}
-                        type={'password'}
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                    />
-                    {formik.touched.password && formik.errors.password &&
-                    <div style={{color: 'red'}}>{formik.errors.password}</div>}
-
-                    {isLoggedIn && <Navigate to={'/profile'}/> }
-
-                    <small>Enter your email address and your password for sign in</small>
+                        {formik.errors.email? <div className={s.email}>{formik.errors.email}</div>:null}
+                    </span>
+                   <span>Enter your password: <Input
+                       placeholder={'password'}
+                       name={'password'}
+                       value={formik.values.password}
+                       onChange={formik.handleChange}
+                   />
+                       {formik.errors.password? <div className={s.password}>{formik.errors.password}</div>:null}
+                   </span>
+                    <label>
+                        <Checkbox />
+                        remember me
+                    </label>
                     <Button
                         shape={'round'}
                         type={'primary'}
                         htmlType={'submit'}
-                    >Sign In
+                    >Login
                     </Button>
                 </form>
-                {loading && <h4>Loading...</h4>}
-                {error && <h4>{error}</h4>}
-
-                <p><NavLink to={'/login'}>Try logging in</NavLink></p>
+                <p>If you have forgotten your password, you can recover it </p>
+                <p><NavLink to={'/recoverypassword'}>Recover password</NavLink></p>
             </Card>
         </div>
     );
-
-
-};
-
+}
 
 export default Login;
