@@ -1,13 +1,15 @@
-import {herokuInstance} from "../api";
 import {RegParamsType} from "../../store/registration/regTypes";
 import {AxiosResponse} from "axios";
+import {instance} from "../api";
 
 
 export const regApi = {
     setReg(body: RegParamsType) {
-        return herokuInstance.post<RegParamsType, AxiosResponse<RegParamsType>>('auth/register', body)
-    }
+        return instance.post<RegParamsType, AxiosResponse<RegParamsType>>('auth/register', body)
+    },
 }
+
+
 
 
 

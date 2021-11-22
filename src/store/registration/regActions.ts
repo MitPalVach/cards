@@ -1,22 +1,22 @@
 import {Dispatch} from "redux";
-import {RegActions, RegistrationActions, RegParamsType} from "./regTypes";
+import {RegActions, RegEnumActions, RegParamsType} from "./regTypes";
 import {regApi} from "../../api/regApi/regApi";
 
 
 export const sendReg = (payload: RegParamsType) => ({
-    type: RegistrationActions.SEND_REG,
+    type: RegEnumActions.SEND_REG,
     payload,
 } as const)
 export const setRegIsFetching = (isFetching: boolean) => ({
-    type: RegistrationActions.SET_REG_IS_FETCHING,
+    type: RegEnumActions.SET_REG_IS_FETCHING,
     isFetching,
 } as const)
 export const setRegIsReg = (isReg: boolean) => ({
-    type: RegistrationActions.SET_REG_IS_REG,
+    type: RegEnumActions.SET_REG_IS_REG,
     isReg,
 } as const)
 export const fetchRegError = (error: string) => ({
-    type: RegistrationActions.FETCH_REG_ERROR,
+    type: RegEnumActions.FETCH_REG_ERROR,
     error,
 } as const)
 

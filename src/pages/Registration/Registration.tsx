@@ -32,7 +32,7 @@ const Registration = () => {
     useEffect(()=> {
         if (error) {
             onErrorNotification()
-            dispatch(fetchRegError(''))
+            dispatch(fetchRegError(error))
         }
     }, [error])
 
@@ -65,7 +65,6 @@ const Registration = () => {
             formik.resetForm()
         },
     })
-
 
     return (
         <div className={s.wrapper}>
@@ -119,15 +118,15 @@ const Registration = () => {
                         >Sign Up
                         </Button>
                     </form>
-                    {error && <h4>{error}</h4>}
 
                     <p><NavLink to={'/login'}>Try logging in</NavLink></p>
                 </Card>
             </Spin>
         </div>
     );
-
-
 };
 
 export default Registration;
+
+
+
