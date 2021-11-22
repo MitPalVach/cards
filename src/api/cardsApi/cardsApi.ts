@@ -1,22 +1,23 @@
 import {instance} from "../api";
+import {AxiosResponse} from "axios";
+import {InitialCardsStateType} from "../../store/cards/cardsTypes";
 
 
 export const cardsApi = {
-    getCards(cardsPack_id?: string, answer?: string, question?: string, grade?: number,
-             page?: number, pageCount?: number, _id?: string, user_id?: string) {
-        return instance.get(`cards/card`,
-            {params: {cardsPack_id, answer, question, grade, page, pageCount, _id, user_id}})
+    async getCards(cardsPack_id: string, answer?: string, question?: string) {
+        return await instance.get
+        (`cards/card?cardsPack_id=${cardsPack_id}&answer=${answer}&question=${question}`)
     },
-    postCard() {
-        return instance.post('cards/card')
+    async postCard(data: InitialCardsStateType) {
+        return await instance.post<AxiosResponse>('cards/card', data)
     },
-    deleteCard(id: string) {
-        return instance.delete(`cards/card`, {params: id})
+    async deleteCard(id: string) {
+        return await instance.delete<AxiosResponse>(`cards/card?id=${id}`)
     },
-    putCard() {
-        return instance.put('cards/card')
+    async putCard(_id: string, question?: string) {
+        return await instance.put<AxiosResponse>('cards/card', {params: _id, question})
     },
 }
 
-
+// getCardsParam
 

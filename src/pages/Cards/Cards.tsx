@@ -5,10 +5,12 @@ import {Content} from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import {useDispatch} from "react-redux";
 import {fetchCardsPayload} from "../../store/cards/cardsActions";
+import {useTypedSelector} from "../../hooks/useTypedSelector";
 
 
 const Cards = () => {
     const dispatch = useDispatch()
+    const {page, pageCount, cardsPack_id} = useTypedSelector(state => state.cards)
 
     const columns = [
         {title: 'Name', dataIndex: 'name', sorter: true, width: '20%'},
@@ -16,9 +18,14 @@ const Cards = () => {
         {title: 'Updated', dataIndex: 'updated', sorter: true, width: '20%'},
     ]
 
+    const toFetchCards = () => (dispatch(fetchCardsPayload(cardsPack_id)))
+
     const minNumberOfCards = 0
     const maxNumberOfCards = 200
-
+    const pagination = {
+        current: page,
+        pageSize: pageCount,
+    }
     return (
 
         <Layout style={{height: '100vh'}}>
@@ -40,10 +47,10 @@ const Cards = () => {
                         columns={columns}
                         loading={false}
                         // dataSource={packsData}
-                        // pagination={}
+                        pagination={pagination}
                         // onChange={}
                     />
-                    <button onClick={() => dispatch(fetchCardsPayload("5f085013ec1e0a0004d83e63"))}>test</button>
+                    <button onClick={toFetchCards}>test</button>
                 </div>
             </Content>
         </Layout>

@@ -1,4 +1,5 @@
 import {fetchCardError, fetchCards, removeCard, setCard, setCardIsFetching, updateCard} from "./cardsActions";
+import {initialCardsState} from "./cardsReducer";
 
 
 export enum CardsEnumActions {
@@ -10,16 +11,14 @@ export enum CardsEnumActions {
     FETCH_CARD_ERROR = 'CARDS/FETCH_CARD_ERROR',
 }
 
-export type CardsType = {
-    answer: string
-    question: string
-    grade: number
-    created: string
-    updated: string
-    user_id: string
+export type CardType = {
     cardsPack_id: string
-    _id: string
+    answer?: string
+    question?: string
+    grade?: number
 }
+
+export type InitialCardsStateType = typeof initialCardsState
 
 export type FetchCardsAction = ReturnType<typeof fetchCards>
 export type SetCardAction = ReturnType<typeof setCard>
