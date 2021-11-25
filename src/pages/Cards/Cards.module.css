@@ -2,3 +2,9 @@
     max-width: 1400px;
     margin: 0 auto;
 }
+
+.cardsContainerHeader {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}

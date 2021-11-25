@@ -9,21 +9,11 @@ import CreateNewPassword from "./pages/PasswordRecovery/CreateNewPassword/Create
 import CheckEmail from "./pages/PasswordRecovery/CheckEmail/CheckEmail";
 import Profile from "./pages/Profile/Profile";
 import Page404 from "./pages/Page404/Page404";
+import PacksTable from "./pages/PacksTable/PacksTable";
 import Cards from "./pages/Cards/Cards";
-// import {useDispatch} from "react-redux";
-// import {useTypedSelector} from "./hooks/useTypedSelector";
-// import {setIsMe} from "./store/loginization/loginActions";
 
 
 const App = () => {
-    // const dispatch = useDispatch()
-    // const isLoggedIn = useTypedSelector(state => state.login.isLoggedIn)
-    //
-    // React.useEffect(() => {
-    //     if (!isLoggedIn) {
-    //         dispatch(setIsMe())
-    //     }
-    // }, [])
 
     return (
         <div>
@@ -38,8 +28,8 @@ const App = () => {
                 <Route path={'/checkemail'} element={<CheckEmail/>}/>
                 <Route path={'/profile'} element={<Profile/>}/>
                 <Route path={'/*'} element={<Page404/>}/>
-                <Route path={'/cards'} element={<Cards/>}/>
-                {/*<Route path={'/packs'} element={<PacksTable/>}/>*/}
+                <Route path={'/packs'} element={<PacksTable/>}/>
+                <Route path={'/packs/:cardsPack_id/cards'} element={<Cards/>}/>
             </Routes>
         </div>
     );

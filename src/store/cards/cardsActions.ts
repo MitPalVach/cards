@@ -1,17 +1,23 @@
-import {CardActions, CardsEnumActions, InitialCardsStateType} from "./cardsTypes";
+import {CardActions, CardsEnumActions, CardType} from "./cardsTypes";
 import {Dispatch} from "redux";
 import {cardsApi} from "../../api/cardsApi/cardsApi";
+import {RootStateType} from "../store";
+import {ThunkDispatch} from "redux-thunk";
 
 
-export const fetchCards = (cardsPack_id: string, answer?: string, question?: string) => ({
+export const fetchCards = (cards: CardType[], cardsPack_id: string, _id: string, page: number, pageCount: number, cardsTotalCount: number
+) => ({
     type: CardsEnumActions.FETCH_CARDS,
+    cards,
     cardsPack_id,
-    answer,
-    question,
+    page,
+    _id,
+    pageCount,
+    cardsTotalCount,
 } as const)
-export const setCard = (card: InitialCardsStateType) => ({
+export const setCard = (cardsPack_id: string, question: string, answer: string, grade: number) => ({
     type: CardsEnumActions.SET_CARD,
-    card,
+    cardsPack_id, question, answer, grade,
 } as const)
 export const removeCard = (_id: string) => ({
     type: CardsEnumActions.DELETE_CARD,
@@ -32,11 +38,17 @@ export const fetchCardError = (error: string) => ({
 } as const)
 
 
-export const fetchCardsPayload = (cardsPack_id: string, answer?: string, question?: string) => async (dispatch: Dispatch<CardActions>) => {
+export const fetchCardsPayload = (cardsPack_id: string, question: string, answer: string, _id: string, grade: number,
+                                  page: number, pageCount: number, cardsTotalCount: number
+) => async (dispatch: Dispatch<CardActions>) => {
     dispatch(setCardIsFetching(true))
     try {
-        await cardsApi.getCards(cardsPack_id, answer, question)
-        dispatch(fetchCards(cardsPack_id, answer, question))
+        const res = await cardsApi.getCards({
+            cardsPack_id, question, answer, _id, grade, page, pageCount,
+        }, cardsTotalCount)
+        dispatch(fetchCards(res.data.cards, res.data.packUserId, res.data._id,
+            res.data.page, res.data.pageCount, res.data.cardsTotalCount
+        ))
     } catch (e: any) {
         const error = e.response ? e.response.data.error : (e.message)
         dispatch(fetchCardError(error))
@@ -44,11 +56,13 @@ export const fetchCardsPayload = (cardsPack_id: string, answer?: string, questio
     dispatch(setCardIsFetching(false))
 }
 
-export const setCardPayload = (data: InitialCardsStateType) => async (dispatch: Dispatch<CardActions>) => {
+export const setCardPayload = (cardsPack_id: string, question: string, answer: string, grade: number) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>, getState: () => RootStateType) => {
+    const {_id, page, pageCount, cardsTotalCount} = getState().cards
     dispatch(setCardIsFetching(true))
     try {
-        const res = await cardsApi.postCard(data)
-        dispatch(setCard(res.data.data))
+        await cardsApi.postCard(cardsPack_id, question, answer, grade)
+        dispatch(setCard(cardsPack_id, question, answer, grade))
+        await dispatch(fetchCardsPayload(cardsPack_id, question, answer, _id, grade, page, pageCount, cardsTotalCount))
     } catch (e: any) {
         const error = e.response ? e.response.data.error : (e.message)
         dispatch(fetchCardError(error))
@@ -56,11 +70,13 @@ export const setCardPayload = (data: InitialCardsStateType) => async (dispatch: 
     dispatch(setCardIsFetching(false))
 }
 
-export const removeCardPayload = (_id: string) => async (dispatch: Dispatch<CardActions>) => {
+export const removeCardPayload = (id: string) => async (dispatch: Dispatch<CardActions>, getState: () => RootStateType) => {
+    const {cards, cardsPack_id, _id, page, pageCount, cardsTotalCount} = getState().cards
     dispatch(setCardIsFetching(true))
     try {
-        await cardsApi.deleteCard(_id)
-        dispatch(removeCard(_id))
+        await cardsApi.deleteCard(id)
+        dispatch(removeCard(id))
+        dispatch(fetchCards(cards, cardsPack_id, _id, page, pageCount, cardsTotalCount))
     } catch (e: any) {
         const error = e.response ? e.response.data.error : (e.message)
         dispatch(fetchCardError(error))
@@ -79,8 +95,5 @@ export const updateCardPayload = (_id: string, question?: string) => async (disp
     }
     dispatch(setCardIsFetching(false))
 }
-
-
-
 
 

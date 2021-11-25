@@ -1,61 +1,110 @@
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import s from './Cards.module.css';
-import {Button, Layout, Slider, Table} from "antd";
+import {Button, Layout, notification, Rate, Table} from "antd";
+import {Input} from 'antd';
 import {Content} from "antd/es/layout/layout";
-import Sider from "antd/es/layout/Sider";
 import {useDispatch} from "react-redux";
-import {fetchCardsPayload} from "../../store/cards/cardsActions";
+import {
+    fetchCardError,
+    fetchCardsPayload,
+    removeCardPayload,
+    setCardPayload
+} from "../../store/cards/cardsActions";
 import {useTypedSelector} from "../../hooks/useTypedSelector";
+import {useParams} from "react-router-dom";
+import ActionsCardColumn from "./ActionsCardColumn/ActionsCardColumn";
+import {CardType} from "../../store/cards/cardsTypes";
 
 
-const Cards = () => {
-    const dispatch = useDispatch()
-    const {page, pageCount, cardsPack_id} = useTypedSelector(state => state.cards)
+const Cards = React.memo(() => {
+        const dispatch = useDispatch()
+        const {cardsPack_id} = useParams()
+        const {_id} = useParams()
+        const cards = useTypedSelector(state => state.cards.cards)
+        const question = useTypedSelector(state => state.cards.question)
+        const answer = useTypedSelector(state => state.cards.answer)
+        const grade = useTypedSelector(state => state.cards.grade)
+        const page = useTypedSelector(state => state.cards.page)
+        const pageCount = useTypedSelector(state => state.cards.pageCount)
+        const cardsTotalCount = useTypedSelector(state => state.cards.cardsTotalCount)
+        const error = useTypedSelector(state => state.cards.error)
 
-    const columns = [
-        {title: 'Name', dataIndex: 'name', sorter: true, width: '20%'},
-        {title: 'Cards count', dataIndex: 'cardsCount', sorter: true, width: '20%'},
-        {title: 'Updated', dataIndex: 'updated', sorter: true, width: '20%'},
-    ]
 
-    const toFetchCards = () => (dispatch(fetchCardsPayload(cardsPack_id)))
+        const columns = [
+            {title: 'Question', dataIndex: 'question', sorter: true, width: '28%'},
+            {title: 'Answer', dataIndex: 'answer', sorter: true, width: '28%'},
+            {title: 'Last updated', dataIndex: 'updated', sorter: true, width: '13%'},
+            {
+                title: 'Grade', dataIndex: 'grade', sorter: true, width: '13%',
+                render: () => (<Rate allowHalf defaultValue={2.5}/>)
+            },
+            {
+                title: 'Actions', width: '18%',
+                render: (data: CardType,) => (<ActionsCardColumn toDeleteCard={toDeleteCard} _id={data._id}/>)
+            },
+        ]
 
-    const minNumberOfCards = 0
-    const maxNumberOfCards = 200
-    const pagination = {
-        current: page,
-        pageSize: pageCount,
+        const onErrorNotification = () => {
+            notification.error({
+                message: 'Error',
+                description: error,
+                placement: 'topLeft',
+                top: 55,
+            });
+        }
+
+        useEffect(() => {
+            dispatch(fetchCardsPayload(cardsPack_id!, question, answer, _id!, grade, page, pageCount, cardsTotalCount))
+        }, [cardsPack_id, question])
+
+        useEffect(() => {
+            if (error) {
+                onErrorNotification()
+                dispatch(fetchCardError(error))
+            }
+        }, [error])
+
+        const pagination = {
+            current: page,
+            pageSize: pageCount,
+            total: cardsTotalCount,
+        }
+
+        const handleTableChange = useCallback((pagination: any) => {
+            dispatch(fetchCardsPayload(cardsPack_id!, question, answer, _id!, grade, pagination.current, pagination.pageSize, pagination.total))
+        }, [])
+        const addCard = useCallback(() => {
+            dispatch(setCardPayload(cardsPack_id!, question, answer, grade))
+        }, [])
+        const toDeleteCard = useCallback(() => {
+            dispatch(removeCardPayload(_id!))
+        }, [])
+
+        return (
+            <Layout style={{height: '100vh'}}>
+                <Content>
+                    <div className={s.cardsContainer}>
+                        <h2>Cards page</h2>
+                        <div className={s.cardsContainerHeader}>
+                            <Input placeholder={'Search...'}
+                                   style={{width: '50%', margin: '20px 0', padding: '10px 20px'}}/>
+                            <Button type={'primary'} shape={'round'} onClick={addCard}>Add new card</Button>
+                        </div>
+                        <Table
+                            columns={columns}
+                            dataSource={cards}
+                            pagination={pagination}
+                            loading={false}
+                            onChange={handleTableChange}
+                            scroll={{y: 650}}
+                        />
+                    </div>
+                </Content>
+            </Layout>
+        );
     }
-    return (
-
-        <Layout style={{height: '100vh'}}>
-            <Sider theme={'light'} style={{padding: '10px 20px'}} width={350}>
-                <h3>Show cards cards</h3>
-                <div>
-                    <Button>My</Button>
-                    <Button>All</Button>
-                </div>
-                <div>
-                    <h3>Number of cards</h3>
-                    <Slider range tooltipVisible={true} min={minNumberOfCards} max={maxNumberOfCards}
-                            defaultValue={[0, 200]}/>
-                </div>
-            </Sider>
-            <Content>
-                <div className={s.cardsContainer}>
-                    <Table
-                        columns={columns}
-                        loading={false}
-                        // dataSource={packsData}
-                        pagination={pagination}
-                        // onChange={}
-                    />
-                    <button onClick={toFetchCards}>test</button>
-                </div>
-            </Content>
-        </Layout>
-    );
-};
-
+)
 export default Cards;
+
+
 

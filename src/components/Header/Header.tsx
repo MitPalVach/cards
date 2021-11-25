@@ -21,13 +21,8 @@ const Header = () => {
     return (
         <Menu mode="horizontal" className={s.menuWrapper}>
             <Menu.Item key='logo'><img src={logo} alt={'react'}/></Menu.Item>
-            <SubMenu key="packs/cards" icon={<SettingOutlined/>} title="Packs/Cards">
-                <Menu.ItemGroup>
                     <Menu.Item key='packs' icon={<SnippetsOutlined/>} onClick={() => navigate('/packs')}>Packs list</Menu.Item>
-                    <Menu.Item key='cards' icon={<SnippetsOutlined/>} onClick={() => navigate('/cards')}>Cards</Menu.Item>
-                </Menu.ItemGroup>
-            </SubMenu>
-            <Menu.Item key='profile' icon={<UserOutlined/>}>Profile</Menu.Item>
+            <Menu.Item key='profile' icon={<UserOutlined/>} onClick={() => navigate('/profile')}>Profile</Menu.Item>
 
             <SubMenu key="developers" icon={<SettingOutlined/>} title="Developers">
                 <Menu.ItemGroup>

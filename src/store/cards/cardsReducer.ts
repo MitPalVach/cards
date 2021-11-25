@@ -1,16 +1,18 @@
-import {CardActions, CardsEnumActions, InitialCardsStateType} from "./cardsTypes";
+import {CardActions, CardsEnumActions, CardType, InitialCardsStateType} from "./cardsTypes";
 
 
 export const initialCardsState = {
-    cardsPack_id: '5f0ca6c5d1c4700004fe4cf3', // <<<===
-    answer: '' as string | undefined,
-    question: '' as string | undefined,
+    cards: [] as CardType[],
+    cardsPack_id: '',
+    question: '??????????',
+    answer: '!!!!!!!!!!!',
     grade: 0,
     page: 1,
-    pageCount: 4,
-    _id: '' ,
+    pageCount: 5,
+    cardsTotalCount: 0,
+    _id: '',
     isFetching: false,
-    error: '',
+    error: ''
 }
 
 export const cardsReducer = (state = initialCardsState, action: CardActions): InitialCardsStateType => {
@@ -18,18 +20,20 @@ export const cardsReducer = (state = initialCardsState, action: CardActions): In
         case CardsEnumActions.FETCH_CARDS:
             return {
                 ...state,
+                cards: action.cards,
                 cardsPack_id: action.cardsPack_id,
-                answer: action.answer,
-                question: action.question
+                page: action.page,
+                pageCount: action.pageCount,
+                cardsTotalCount: action.cardsTotalCount,
+                _id: action._id,
             }
         case CardsEnumActions.SET_CARD:
             return {
                 ...state,
-                cardsPack_id: action.card.cardsPack_id,
-                answer: action.card.answer,
-                question: action.card.question,
-                grade: action.card.grade,
-                page: action.card.page,
+                cardsPack_id: action.cardsPack_id,
+                question: action.question,
+                answer: action.answer,
+                grade: action.grade,
             }
         case CardsEnumActions.DELETE_CARD:
             return {
@@ -50,3 +54,5 @@ export const cardsReducer = (state = initialCardsState, action: CardActions): In
             return state
     }
 }
+
+
