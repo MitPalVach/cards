@@ -33,12 +33,12 @@ export type InitialCardsStateType = {
 
 export type CardType = {
     cardsPack_id: string
-    question: string
-    answer: string
-    page: number
-    pageCount: number
-    grade: number
-    _id: string
+    question?: string
+    answer?: string
+    page?: number
+    pageCount?: number
+    grade?: number
+    _id?: string
 }
 
 export type FetchCardsAction = ReturnType<typeof fetchCards>

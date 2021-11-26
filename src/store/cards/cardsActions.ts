@@ -38,8 +38,8 @@ export const fetchCardError = (error: string) => ({
 } as const)
 
 
-export const fetchCardsPayload = (cardsPack_id: string, question: string, answer: string, _id: string, grade: number,
-                                  page: number, pageCount: number, cardsTotalCount: number
+export const fetchCardsPayload = (cardsPack_id: string, question?: string, answer?: string, _id?: string, grade?: number,
+                                  page?: number, pageCount?: number, cardsTotalCount?: number
 ) => async (dispatch: Dispatch<CardActions>) => {
     dispatch(setCardIsFetching(true))
     try {
@@ -70,13 +70,12 @@ export const setCardPayload = (cardsPack_id: string, question: string, answer: s
     dispatch(setCardIsFetching(false))
 }
 
-export const removeCardPayload = (id: string) => async (dispatch: Dispatch<CardActions>, getState: () => RootStateType) => {
-    const {cards, cardsPack_id, _id, page, pageCount, cardsTotalCount} = getState().cards
+export const removeCardPayload = (_id: string, cardsPack_id: string) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>) => {
     dispatch(setCardIsFetching(true))
     try {
-        await cardsApi.deleteCard(id)
-        dispatch(removeCard(id))
-        dispatch(fetchCards(cards, cardsPack_id, _id, page, pageCount, cardsTotalCount))
+        await cardsApi.deleteCard(_id)
+        dispatch(removeCard(_id))
+        await dispatch(fetchCardsPayload(cardsPack_id))
     } catch (e: any) {
         const error = e.response ? e.response.data.error : (e.message)
         dispatch(fetchCardError(error))
@@ -84,11 +83,11 @@ export const removeCardPayload = (id: string) => async (dispatch: Dispatch<CardA
     dispatch(setCardIsFetching(false))
 }
 
-export const updateCardPayload = (_id: string, question?: string) => async (dispatch: Dispatch<CardActions>) => {
+export const updateCardPayload = (cardsPack_id: string, _id: string, question?: string) => async (dispatch: Dispatch<CardActions>) => {
     dispatch(setCardIsFetching(true))
     try {
         const res = await cardsApi.putCard(_id, question)
-        dispatch(removeCard(res.data.data))
+        dispatch(removeCard(res.data.data._id))
     } catch (e: any) {
         const error = e.response ? e.response.data.error : (e.message)
         dispatch(fetchCardError(error))

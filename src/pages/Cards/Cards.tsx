@@ -6,8 +6,7 @@ import {Content} from "antd/es/layout/layout";
 import {useDispatch} from "react-redux";
 import {
     fetchCardError,
-    fetchCardsPayload,
-    removeCardPayload,
+    fetchCardsPayload, removeCardPayload,
     setCardPayload
 } from "../../store/cards/cardsActions";
 import {useTypedSelector} from "../../hooks/useTypedSelector";
@@ -31,16 +30,18 @@ const Cards = React.memo(() => {
 
 
         const columns = [
-            {title: 'Question', dataIndex: 'question', sorter: true, width: '28%'},
-            {title: 'Answer', dataIndex: 'answer', sorter: true, width: '28%'},
-            {title: 'Last updated', dataIndex: 'updated', sorter: true, width: '13%'},
+            {title: 'Question', dataIndex: 'question', width: '28%'},
+            {title: 'Answer', dataIndex: 'answer', width: '28%'},
+            {title: 'Last updated', dataIndex: 'updated', width: '13%'},
             {
                 title: 'Grade', dataIndex: 'grade', sorter: true, width: '13%',
                 render: () => (<Rate allowHalf defaultValue={2.5}/>)
             },
             {
                 title: 'Actions', width: '18%',
-                render: (data: CardType,) => (<ActionsCardColumn toDeleteCard={toDeleteCard} _id={data._id}/>)
+                render: (_: any, record: CardType) => {
+                    return <ActionsCardColumn _id={record._id} onDeleteCard={toDeleteCard}/>
+                }
             },
         ]
 
@@ -76,9 +77,9 @@ const Cards = React.memo(() => {
         const addCard = useCallback(() => {
             dispatch(setCardPayload(cardsPack_id!, question, answer, grade))
         }, [])
-        const toDeleteCard = useCallback(() => {
-            dispatch(removeCardPayload(_id!))
-        }, [])
+        const toDeleteCard = (_id: string) => {
+            dispatch(removeCardPayload(_id, cardsPack_id!))
+        }
 
         return (
             <Layout style={{height: '100vh'}}>

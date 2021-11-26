@@ -11,7 +11,9 @@ import {useTypedSelector} from "../../hooks/useTypedSelector";
 
 const Login = () => {
     const dispatch = useDispatch()
-    const {isLoggedIn, error} = useTypedSelector(state => state.login)
+    const isLoggedIn = useTypedSelector(state => state.login.isLoggedIn)
+    const error = useTypedSelector(state => state.login.error)
+
 
     const onErrorNotification = () => {
         notification.error({

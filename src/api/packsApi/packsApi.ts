@@ -1,7 +1,6 @@
 import {instance} from "../api";
 import {AddPackResponseType, DeletePackResponseType, GetPacksResponseType} from "./types";
 
-
 export const packsApi = () => {
     return {
         getCards(pageNumber: number, pageSize: number) {
@@ -15,6 +14,9 @@ export const packsApi = () => {
         },
         deletePack(packId: string) {
             return instance.delete<DeletePackResponseType>(`/cards/pack?id=${packId}`)
+        },
+        updatePack(packId: string, newPackName: string) {
+            return instance.put(`/cards/pack`, {cardsPack: {_id: packId, name: newPackName}})
         }
     }
 }

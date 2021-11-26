@@ -23,9 +23,10 @@ export const fetchLogError = (error: string) => ({
 
 export const login = (data: LoginParamsType) => async (dispatch: Dispatch<ActionsType>) => {
     try {
-        await loginAPI.login(data)
+        const res = await loginAPI.login(data)
         dispatch(setIsLoggedIn(true))
         dispatch(setIsInitialized(true))
+        dispatch(setProfile(res.data))
     } catch (e: any) {
         const error = e.response ? e.response.data.error : (e.message)
         dispatch(fetchLogError(error))
@@ -50,3 +51,5 @@ export const setIsMe = () => async (dispatch: Dispatch<ActionsType>) => {
         dispatch(fetchLogError(error))
     }
 }
+
+

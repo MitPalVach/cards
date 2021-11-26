@@ -13,7 +13,7 @@ const Header = () => {
     const {SubMenu} = Menu;
     let navigate = useNavigate();
     const dispatch = useDispatch()
-    const logoutNavigate = () => {
+    const logOut = () => {
         dispatch(logout())
         navigate('/login')
     }
@@ -45,7 +45,7 @@ const Header = () => {
                 <Menu.ItemGroup>
                     <Menu.Item key='login' icon={<SolutionOutlined/>} onClick={() => navigate('/login')}>Sign in</Menu.Item>
                     <Menu.Item key='reg' icon={<SolutionOutlined/>} onClick={() => navigate('/registration')}>Sign up</Menu.Item>
-                    <Menu.Item key='logout' icon={<SolutionOutlined/>} onClick={logoutNavigate}>Sign out</Menu.Item>
+                    <Menu.Item key='logout' icon={<SolutionOutlined/>} onClick={logOut}>Sign out</Menu.Item>
                 </Menu.ItemGroup>
             </SubMenu>
         </Menu>

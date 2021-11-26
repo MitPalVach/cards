@@ -8,7 +8,7 @@ export const initialCardsState = {
     answer: '!!!!!!!!!!!',
     grade: 0,
     page: 1,
-    pageCount: 5,
+    pageCount: 4,
     cardsTotalCount: 0,
     _id: '',
     isFetching: false,
@@ -36,10 +36,7 @@ export const cardsReducer = (state = initialCardsState, action: CardActions): In
                 grade: action.grade,
             }
         case CardsEnumActions.DELETE_CARD:
-            return {
-                ...state,
-                _id: action._id
-            }
+            return {...state, cards: state.cards.filter(delCard => delCard._id !== action._id)}
         case CardsEnumActions.UPDATE_CARD:
             return {
                 ...state,
