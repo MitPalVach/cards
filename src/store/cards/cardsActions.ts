@@ -1,95 +1,86 @@
-import {CardActions, CardsEnumActions, CardType} from "./cardsTypes";
-import {Dispatch} from "redux";
+import {CardActions, CardsEnum, GetCardsType, PostCardType, PutCardType} from "./cardsTypes";
 import {cardsApi} from "../../api/cardsApi/cardsApi";
 import {RootStateType} from "../store";
 import {ThunkDispatch} from "redux-thunk";
 
 
-export const fetchCards = (cards: CardType[], cardsPack_id: string, _id: string, page: number, pageCount: number, cardsTotalCount: number
-) => ({
-    type: CardsEnumActions.FETCH_CARDS,
-    cards,
-    cardsPack_id,
-    page,
-    _id,
-    pageCount,
-    cardsTotalCount,
+// actions
+export const fetchAllCards = (cards: GetCardsType[]) => ({type: CardsEnum.FETCH_ALL_CARDS, cards} as const)
+export const fetchPackId = (cardsPack_id: string) => ({type: CardsEnum.PACK_ID, payload: {cardsPack_id}} as const)
+export const fetchCardPage = (page: number) => ({type: CardsEnum.PAGE, payload: {page}} as const)
+export const fetchCardPageCount = (pageCount: number) => ({type: CardsEnum.PAGE_COUNT, payload: {pageCount}} as const)
+export const fetchCardTotalCount = (cardsTotalCount: number) => ({
+    type: CardsEnum.TOTAL_COUNT,
+    payload: {cardsTotalCount}
 } as const)
-export const setCard = (cardsPack_id: string, question: string, answer: string, grade: number) => ({
-    type: CardsEnumActions.SET_CARD,
-    cardsPack_id, question, answer, grade,
-} as const)
-export const removeCard = (_id: string) => ({
-    type: CardsEnumActions.DELETE_CARD,
-    _id,
-} as const)
-export const updateCard = (_id: string, question: string) => ({
-    type: CardsEnumActions.UPDATE_CARD,
-    question,
-    _id,
-} as const)
-export const setCardIsFetching = (isFetching: boolean) => ({
-    type: CardsEnumActions.SET_CARD_IS_FETCHING,
-    isFetching,
-} as const)
-export const fetchCardError = (error: string) => ({
-    type: CardsEnumActions.FETCH_CARD_ERROR,
-    error,
-} as const)
+export const fetchMin = (min: number) => ({type: CardsEnum.MIN, payload: {min}} as const)
+export const fetchMax = (max: number) => ({type: CardsEnum.MAX, payload: {max}} as const)
+export const fetchSortCards = (sortCards: number) => ({type: CardsEnum.SORT_CARDS, payload: {sortCards}} as const)
+export const fetchCardQuestion = (cardQuestion: string) => ({type: CardsEnum.QUEST, payload: {cardQuestion}} as const)
+export const fetchCardAnswer = (cardAnswer: string) => ({type: CardsEnum.ANSWER, payload: {cardAnswer}} as const)
+
+export const setCard = (newCard: PostCardType) => ({type: CardsEnum.SET_CARD, newCard} as const)
+export const removeCard = (_id: string) => ({type: CardsEnum.DELETE_CARD, _id} as const)
+export const updateCard = (changedCard: PutCardType) => ({type: CardsEnum.UPDATE_CARD, changedCard} as const)
+export const setCardIsFetching = (isFetching: boolean) => ({type: CardsEnum.FETCHING, payload: {isFetching}} as const)
+export const fetchCardError = (error: string) => ({type: CardsEnum.FETCH_ERROR, payload: {error}} as const)
 
 
-export const fetchCardsPayload = (cardsPack_id: string, question?: string, answer?: string, _id?: string, grade?: number,
-                                  page?: number, pageCount?: number, cardsTotalCount?: number
-) => async (dispatch: Dispatch<CardActions>) => {
+// thunk
+export const fetchCardsPayload = (cardsPack_id: string, page: number, pageCount: number) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>, getState: () => RootStateType) => {
+    const {cardAnswer, cardQuestion, min, max, sortCards} = getState().cards
     dispatch(setCardIsFetching(true))
     try {
-        const res = await cardsApi.getCards({
-            cardsPack_id, question, answer, _id, grade, page, pageCount,
-        }, cardsTotalCount)
-        dispatch(fetchCards(res.data.cards, res.data.packUserId, res.data._id,
-            res.data.page, res.data.pageCount, res.data.cardsTotalCount
-        ))
+        const res = await cardsApi.getCards(cardAnswer, cardQuestion, cardsPack_id, min, max, sortCards, page, pageCount)
+        dispatch(fetchAllCards(res.data.cards))
+        dispatch(fetchCardTotalCount(res.data.cardsTotalCount))
     } catch (e: any) {
-        const error = e.response ? e.response.data.error : (e.message)
+        const error = e.response ? e.response.data.error : e.message
         dispatch(fetchCardError(error))
     }
     dispatch(setCardIsFetching(false))
 }
 
-export const setCardPayload = (cardsPack_id: string, question: string, answer: string, grade: number) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>, getState: () => RootStateType) => {
-    const {_id, page, pageCount, cardsTotalCount} = getState().cards
+export const setCardPayload = (cardsPack_id: string, question: string, answer: string, grade: number, shots: number) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>, getState: () => RootStateType) => {
+    const {page, pageCount, cardsTotalCount} = getState().cards
     dispatch(setCardIsFetching(true))
     try {
-        await cardsApi.postCard(cardsPack_id, question, answer, grade)
-        dispatch(setCard(cardsPack_id, question, answer, grade))
-        await dispatch(fetchCardsPayload(cardsPack_id, question, answer, _id, grade, page, pageCount, cardsTotalCount))
+        await cardsApi.postCard(cardsPack_id, question, answer, grade, shots)
+        dispatch(setCard({cardsPack_id, question, answer, grade, shots}))
+        dispatch(fetchCardTotalCount(cardsTotalCount))
+        await dispatch(fetchCardsPayload(cardsPack_id, page, pageCount))
     } catch (e: any) {
-        const error = e.response ? e.response.data.error : (e.message)
+        const error = e.response ? e.response.data.error : e.message
         dispatch(fetchCardError(error))
     }
     dispatch(setCardIsFetching(false))
 }
 
-export const removeCardPayload = (_id: string, cardsPack_id: string) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>) => {
+export const removeCardPayload = (_id: string, cardsPack_id: string) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>, getState: () => RootStateType) => {
+    const {page, pageCount, cardsTotalCount} = getState().cards
     dispatch(setCardIsFetching(true))
     try {
         await cardsApi.deleteCard(_id)
         dispatch(removeCard(_id))
-        await dispatch(fetchCardsPayload(cardsPack_id))
+        dispatch(fetchCardTotalCount(cardsTotalCount))
+        await dispatch(fetchCardsPayload(cardsPack_id, page, pageCount))
     } catch (e: any) {
-        const error = e.response ? e.response.data.error : (e.message)
+        const error = e.response ? e.response.data.error : e.message
         dispatch(fetchCardError(error))
     }
     dispatch(setCardIsFetching(false))
 }
 
-export const updateCardPayload = (cardsPack_id: string, _id: string, question?: string) => async (dispatch: Dispatch<CardActions>) => {
+export const updateCardPayload = (_id: string, question: string,  answer:string, cardsPack_id: string) => async (dispatch: ThunkDispatch<RootStateType, unknown, CardActions>, getState: () => RootStateType) => {
+    const {page, pageCount, cardsTotalCount} = getState().cards
     dispatch(setCardIsFetching(true))
     try {
-        const res = await cardsApi.putCard(_id, question)
-        dispatch(removeCard(res.data.data._id))
+        await cardsApi.putCard(_id, question, answer)
+        dispatch(updateCard({_id, question, answer}))
+        dispatch(fetchCardTotalCount(cardsTotalCount))
+        await dispatch(fetchCardsPayload(cardsPack_id, page, pageCount))
     } catch (e: any) {
-        const error = e.response ? e.response.data.error : (e.message)
+        const error = e.response ? e.response.data.error : e.message
         dispatch(fetchCardError(error))
     }
     dispatch(setCardIsFetching(false))

@@ -29,7 +29,7 @@ const App = () => {
                 <Route path={'/profile'} element={<Profile/>}/>
                 <Route path={'/*'} element={<Page404/>}/>
                 <Route path={'/packs'} element={<PacksTable/>}/>
-                <Route path={'/packs/:cardsPack_id/cards'} element={<Cards/>}/>
+                <Route path={'/packs/:id/cards'} element={<Cards/>}/>
             </Routes>
         </div>
     );

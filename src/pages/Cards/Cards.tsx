@@ -6,23 +6,28 @@ import {Content} from "antd/es/layout/layout";
 import {useDispatch} from "react-redux";
 import {
     fetchCardError,
-    fetchCardsPayload, removeCardPayload,
-    setCardPayload
+    fetchCardsPayload,
+    removeCardPayload,
+    setCardPayload,
+    updateCardPayload,
 } from "../../store/cards/cardsActions";
 import {useTypedSelector} from "../../hooks/useTypedSelector";
 import {useParams} from "react-router-dom";
 import ActionsCardColumn from "./ActionsCardColumn/ActionsCardColumn";
-import {CardType} from "../../store/cards/cardsTypes";
 
+
+// удаляется карта с зависанием
 
 const Cards = React.memo(() => {
         const dispatch = useDispatch()
-        const {cardsPack_id} = useParams()
-        const {_id} = useParams()
         const cards = useTypedSelector(state => state.cards.cards)
         const question = useTypedSelector(state => state.cards.question)
         const answer = useTypedSelector(state => state.cards.answer)
         const grade = useTypedSelector(state => state.cards.grade)
+        const {id} = useParams()
+        // const {_id} = useParams()
+        // const _id = useTypedSelector(state => state.cards._id)
+        const shots = useTypedSelector(state => state.cards.shots)
         const page = useTypedSelector(state => state.cards.page)
         const pageCount = useTypedSelector(state => state.cards.pageCount)
         const cardsTotalCount = useTypedSelector(state => state.cards.cardsTotalCount)
@@ -39,8 +44,11 @@ const Cards = React.memo(() => {
             },
             {
                 title: 'Actions', width: '18%',
-                render: (_: any, record: CardType) => {
-                    return <ActionsCardColumn _id={record._id} onDeleteCard={toDeleteCard}/>
+                render: (_: any) => {
+                    return <ActionsCardColumn _id={_._id}
+                                              toDeleteCard={toDeleteCard}
+                                              toUpdateCard={toUpdateCard}
+                    />
                 }
             },
         ]
@@ -55,8 +63,8 @@ const Cards = React.memo(() => {
         }
 
         useEffect(() => {
-            dispatch(fetchCardsPayload(cardsPack_id!, question, answer, _id!, grade, page, pageCount, cardsTotalCount))
-        }, [cardsPack_id, question])
+            dispatch(fetchCardsPayload(id!, page, pageCount))
+        }, [])
 
         useEffect(() => {
             if (error) {
@@ -70,16 +78,18 @@ const Cards = React.memo(() => {
             pageSize: pageCount,
             total: cardsTotalCount,
         }
-
         const handleTableChange = useCallback((pagination: any) => {
-            dispatch(fetchCardsPayload(cardsPack_id!, question, answer, _id!, grade, pagination.current, pagination.pageSize, pagination.total))
+            dispatch(fetchCardsPayload(pagination.current, pagination.pageSize, pagination.total)) // ?
         }, [])
-        const addCard = useCallback(() => {
-            dispatch(setCardPayload(cardsPack_id!, question, answer, grade))
+        const toCreateCard = useCallback(() => {
+            dispatch(setCardPayload(id!, question, answer, grade, shots))
         }, [])
-        const toDeleteCard = (_id: string) => {
-            dispatch(removeCardPayload(_id, cardsPack_id!))
-        }
+        const toDeleteCard = useCallback((_id: string) => {
+            dispatch(removeCardPayload(_id, id!))
+        }, [])
+        const toUpdateCard = useCallback((_id: string) => {
+            dispatch(updateCardPayload(_id, question, answer, id!))
+        }, [])
 
         return (
             <Layout style={{height: '100vh'}}>
@@ -89,7 +99,7 @@ const Cards = React.memo(() => {
                         <div className={s.cardsContainerHeader}>
                             <Input placeholder={'Search...'}
                                    style={{width: '50%', margin: '20px 0', padding: '10px 20px'}}/>
-                            <Button type={'primary'} shape={'round'} onClick={addCard}>Add new card</Button>
+                            <Button type={'primary'} shape={'round'} onClick={toCreateCard}>Add new card</Button>
                         </div>
                         <Table
                             columns={columns}
