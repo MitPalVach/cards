@@ -1,20 +1,22 @@
 import {PackType} from "../../api/packsApi/types";
 import {Dispatch} from "redux";
 import {packsApi} from "../../api/packsApi/packsApi";
-import {RootStateType} from "../store";
 import {ThunkDispatch} from "redux-thunk";
 import {PacksActionTypes} from "./types";
+import {RootStateType} from "../store";
 
 export enum PacksActions {
     SET_PACKS = 'PACKS/SET_PACKS',
-    SET_PAGE = 'PACKS/SET_PAGE',
     ADD_PACK = 'PACKS/ADD_PACK',
-    UPDATE_PACK = 'PACKS/UPDATE_PACK',
-    SET_PACKS_TOTAL_COUNT = 'PACKS/SET_PACKS_TOTAL_COUNT',
-    SET_PAGE_SIZE = 'PACKS/SET_PAGE_SIZE',
     DElETE_PACK = 'PACKS/DElETE_PACK',
+    UPDATE_PACK = 'PACKS/UPDATE_PACK',
+    SET_PAGE = 'PACKS/SET_PAGE',
+    SET_PAGE_SIZE = 'PACKS/SET_PAGE_SIZE',
+    SET_PACKS_TOTAL_COUNT = 'PACKS/SET_PACKS_TOTAL_COUNT',
     SET_IS_FETCHING = 'PACKS/SET_IS_FETCHING',
     SET_ERROR = 'PACKS/SET_ERROR',
+    SET_SEARCH_PACK_VALUE = 'PACKS/SET_SEARCH_PACK_TERM',
+    SET_PACK_USER_ID = 'PACKS/SET_PACK_USER_ID',
 }
 
 export const setPacks = (packs: Array<PackType>) => {
@@ -72,11 +74,20 @@ export const setError = (error: string) => {
         error,
     } as const
 }
+export const setSearchPackValue = (searchValue: string) => {
+    return {
+        type: PacksActions.SET_SEARCH_PACK_VALUE,
+        searchValue,
+    } as const
+}
+export const setUserId = (user_id: string) => ({
+    type: PacksActions.SET_PACK_USER_ID,
+        user_id
+} as const)
 
-
-export const getPacksThunk = (pageNumber: number, pageSize: number) => (dispatch: Dispatch) => {
+export const getPacksThunk = (pageNumber: number, pageSize: number, packName?: string) => (dispatch: Dispatch) => {
     dispatch(setIsFetching(true))
-    packsApi().getCards(pageNumber, pageSize)
+    packsApi().getPacks(pageNumber, pageSize, packName)
         .then(response => response.data)
         .then(data => {
             dispatch(setIsFetching(false))
@@ -110,7 +121,7 @@ export const deletePackThunk = (packId: string) => (dispatch: ThunkDispatch<Root
         .then(response => response.data)
         .then(data => {
             dispatch(setIsFetching(false))
-            dispatch(deletePack(packId))
+            dispatch(deletePack(data.deletedCardsPack._id))
             dispatch(getPacksThunk(page, packsPerPage))
         })
         .catch(err => {

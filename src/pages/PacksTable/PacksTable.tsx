@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import s from './PacksTable.module.css'
 import {Button, Input, Layout, notification, Slider, Table} from "antd";
 import {useDispatch} from "react-redux";
@@ -6,18 +6,19 @@ import {
     addPackThunk,
     deletePackThunk,
     getPacksThunk,
-    setError,
     setPage,
-    setPageSize, updatePackThunk
+    setPageSize, setSearchPackValue, setUserId, updatePackThunk
 } from "../../store/packsTable/actions";
 import {useTypedSelector} from "../../hooks/useTypedSelector";
 import Sider from "antd/es/layout/Sider";
 import {Content} from "antd/es/layout/layout";
 import ActionsColumn from "./ActionsColumn/ActionsColumn";
 import {PackType} from "../../api/packsApi/types";
+import {setError} from "../../store/recoveryPass/actions";
 import {useNavigate} from "react-router-dom";
 
 const PacksTable = () => {
+
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const packsData = useTypedSelector(state => state.packsTable.packs)
@@ -26,6 +27,36 @@ const PacksTable = () => {
     const packsPerPage = useTypedSelector(state => state.packsTable.pageSize)
     const isFetching = useTypedSelector(state => state.packsTable.isFetching)
     const error = useTypedSelector(state => state.packsTable.error)
+    const searchTerm = useTypedSelector(state => state.packsTable.searchTerm)
+    const isLoggedIn = useTypedSelector(state => state.login.isLoggedIn)
+    const profile = useTypedSelector(state => state.login.profile)
+    const _id = useTypedSelector(state => state.login.profile._id)
+
+
+    const [myPacks, setMyPacks] = useState(false)
+    useEffect(() => {
+        if (!profile._id) {
+            dispatch(setUserId(_id))
+        }
+    }, []);
+    const showMyPacks = () => {
+
+    }
+    const showAllPacks = () => {
+        // searchingPacks = packsData.filter(pack => pack.user_id === 'my id')
+    }
+
+    useEffect(() => {
+        if (!isLoggedIn) {
+            navigate('/login')
+        }
+    }, [])
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            dispatch(getPacksThunk(page, packsPerPage, searchTerm))
+        }
+    }, [page, packsPerPage])
 
     const onErrorNotification = () => {
         notification.error({
@@ -35,17 +66,22 @@ const PacksTable = () => {
             top: 55,
         });
     }
-
-    useEffect(() => {
-        dispatch(getPacksThunk(page, packsPerPage))
-    }, [page, packsPerPage])
-
     useEffect(() => {
         if (error) {
             onErrorNotification()
             dispatch(setError(''))
         }
     }, [error])
+
+    useEffect(() => {
+        const debounceTimeout = setTimeout(() => {
+            dispatch(getPacksThunk(page, packsPerPage, searchTerm))
+        }, 2000)
+
+        return () => {
+            clearTimeout(debounceTimeout)
+        }
+    }, [searchTerm])
 
     const columns = [
         {
@@ -74,7 +110,7 @@ const PacksTable = () => {
         },
         {
             title: 'Actions',
-            width: '20%',
+            width: '30%',
             render: (_: any, record: PackType) => (
                 <ActionsColumn
                     packId={record._id}
@@ -100,11 +136,16 @@ const PacksTable = () => {
     const handleAddPack = () => {
         dispatch(addPackThunk('alo'))
     }
-    const handleDeletePack = (packId: string) => {
+    const handleDeletePack = useCallback((packId: string) => {
         dispatch(deletePackThunk(packId))
-    };
-    const handleUpdatePack = (packId: string, newPackName: string) => {
+    }, [])
+    const handleUpdatePack = useCallback((packId: string, newPackName: string) => {
         dispatch(updatePackThunk(packId, newPackName))
+    }, [])
+
+    const handleSearchPack = (e: ChangeEvent<HTMLInputElement>) => {
+        const searchInputValue = e.currentTarget.value
+        dispatch(setSearchPackValue(searchInputValue))
     }
 
     const minNumberOfCards = 0
@@ -117,14 +158,20 @@ const PacksTable = () => {
                     <div>
                         <h3>Show packs cards</h3>
                         <div className={s.showPacksButtons}>
-                            <Button>My</Button>
-                            <Button>All</Button>
+                            <Button onClick={showMyPacks}>My</Button>
+                            <Button onClick={showAllPacks}>All</Button>
                         </div>
                     </div>
                     <div>
                         <h3>Number of cards</h3>
-                        <Slider range tooltipVisible={true} tooltipPlacement={'bottom'} min={minNumberOfCards}
-                                max={maxNumberOfCards} defaultValue={[0, 200]}/>
+                        <Slider
+                            range
+                            tooltipVisible={true}
+                            tooltipPlacement={'bottom'}
+                            min={minNumberOfCards}
+                            max={maxNumberOfCards}
+                            defaultValue={[0, 200]}
+                        />
                     </div>
                 </div>
             </Sider>
@@ -133,7 +180,10 @@ const PacksTable = () => {
                     <h2>Pack list</h2>
                     <div className={s.tableContainerHeader}>
                         <Input placeholder={'Search...'}
-                               style={{width: '50%', margin: '20px 0', padding: '10px 20px'}}/>
+                               style={{width: '50%', margin: '20px 0', padding: '10px 20px'}}
+                               onInput={handleSearchPack}
+                               value={searchTerm}
+                        />
                         <Button type={'primary'} shape={'round'} onClick={handleAddPack}>Add new pack</Button>
                     </div>
                     <Table
@@ -143,6 +193,7 @@ const PacksTable = () => {
                         loading={isFetching}
                         onChange={handleTableChange}
                         scroll={{y: 650}}
+                        rowKey={obj => obj._id!}
                     />
                 </div>
             </Content>

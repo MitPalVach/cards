@@ -1,10 +1,10 @@
-import {instance} from "../api";
 import {AddPackResponseType, DeletePackResponseType, GetPacksResponseType} from "./types";
+import {instance} from "../api";
 
 export const packsApi = () => {
     return {
-        getCards(pageNumber: number, pageSize: number) {
-            return instance.get<GetPacksResponseType>(`/cards/pack?page=${pageNumber}&pageCount=${pageSize}`)
+        getPacks(pageNumber: number, pageSize: number, packName?: string) {
+            return instance.get<GetPacksResponseType>(`/cards/pack`, {params: {page: pageNumber, pageCount: pageSize, packName: (packName && packName)}})
         },
         setPage(newPage: number) {
             return instance.get<GetPacksResponseType>(`/cards/pack?page=${newPage}`)

@@ -8,14 +8,12 @@ import {store} from "./store/store";
 
 
 ReactDOM.render(
-    <React.StrictMode>
-        <HashRouter>
-            <Provider store={store}>
-                <App/>
-            </Provider>
-        </HashRouter>
-    </React.StrictMode>,
-document.getElementById('root')
+    <HashRouter>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </HashRouter>,
+    document.getElementById('root')
 );
 
 

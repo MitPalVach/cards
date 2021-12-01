@@ -26,7 +26,7 @@ export type LoginResponseType = {
     name: string,
     avatar?: string,
     publicCardPacksCount: number,
-    create: number,
+    created: number,
     update: number,
     isAdmin: boolean,
     verified: boolean,

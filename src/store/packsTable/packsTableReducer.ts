@@ -8,6 +8,8 @@ const initialState: PacksInitialStateType = {
     pageSize: 10,
     isFetching: false,
     error: '',
+    searchTerm: '',
+    user_id: '',
 }
 
 export const packsTableReducer = (state: PacksInitialStateType = initialState, action: PacksActionTypes): PacksInitialStateType => {
@@ -15,34 +17,28 @@ export const packsTableReducer = (state: PacksInitialStateType = initialState, a
 
         case PacksActions.SET_PACKS:
             return {...state, packs: action.packs}
-
         case PacksActions.SET_PAGE:
             return {...state, page: action.newPage}
-
         case PacksActions.SET_PACKS_TOTAL_COUNT:
             return {...state, cardPacksTotalCount: action.count}
-
         case PacksActions.ADD_PACK:
             const newPack = action.newPack
             return {...state, packs: [...state.packs, newPack]}
-
         case PacksActions.SET_PAGE_SIZE:
             return {...state, pageSize: action.pageSize}
-
         case PacksActions.DElETE_PACK:
             return {...state, packs: state.packs.filter(pack => pack._id !== action.packId)}
-
         case PacksActions.SET_IS_FETCHING:
             return {...state, isFetching: action.isFetching}
-
         case PacksActions.SET_ERROR:
             return {...state, error: action.error}
-
         case PacksActions.UPDATE_PACK:
             return {...state, packs: state.packs.map(pack => pack._id === action.packId ? {...pack, name: action.newPackName}: pack)}
-
+        case PacksActions.SET_SEARCH_PACK_VALUE:
+            return {...state, searchTerm: action.searchValue}
+        case PacksActions.SET_PACK_USER_ID:
+            return {...state, user_id: action.user_id}
         default:
             return state
     }
 }
-

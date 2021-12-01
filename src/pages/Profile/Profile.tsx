@@ -12,8 +12,11 @@ const Profile = React.memo(() => {
     return (
         <div className={s.profileWrapper}>
             <div>
-                {profile._id ? <img src="https://via.placeholder.com/300" alt=""/> : <Navigate to={'/login'} replace={true}/>}
-                {profile._id ? <h2>You are: {profile.name}</h2> : <Navigate to={'/login'} replace={true}/>}
+                {profile._id && <img src="https://via.placeholder.com/300" alt=""/>}
+                {profile._id && <h2>Name: {profile.name}</h2>}
+                {profile._id && <h2>Email: {profile.email}</h2>}
+                {profile._id && <h2>ID: {profile._id}</h2>}
+                {profile._id && <h2>Created: {profile.created}</h2>}
             </div>
         </div>
     );

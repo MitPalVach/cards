@@ -1,7 +1,7 @@
 import {
     CardActions,
-    CardsEnum,
-    GetCardsType,
+    CardsEnum, CardType, GetCardsType,
+    // GetCardsType,
     InitialCardsStateType,
     PostCardType,
     PutCardType
@@ -12,6 +12,7 @@ export const initialCardsState: InitialCardsStateType = {
     cards: [] as GetCardsType[],
     newCard: {} as PostCardType,
     changedCard: {} as PutCardType,
+    // cards: [] as CardType[],
 
     cardAnswer: '',
     cardQuestion: '',
@@ -22,11 +23,13 @@ export const initialCardsState: InitialCardsStateType = {
     page: 1,
     pageCount: 4,
     cardsTotalCount: 0,
-    question: 'qq',
-    answer: 'aa',
+    question: 'q2q1',
+    answer: 'aa21',
     grade: 0,
     shots: 0,
     _id: '',
+    searchTerm: '',
+    user_id: '',
 
     isFetching: false,
     error: '',
@@ -45,8 +48,8 @@ export const cardsReducer = (state = initialCardsState, action: CardActions): In
         case CardsEnum.ANSWER:
         case CardsEnum.FETCHING:
         case CardsEnum.FETCH_ERROR:
+        case CardsEnum.SEARCH_CARD:
             return {...state, ...action.payload}
-
         case CardsEnum.FETCH_ALL_CARDS:
             return {...state, cards: action.cards}
         case CardsEnum.SET_CARD:
@@ -55,6 +58,7 @@ export const cardsReducer = (state = initialCardsState, action: CardActions): In
             return {...state, cards: state.cards.filter(delCard => delCard._id !== action._id)}
         case CardsEnum.UPDATE_CARD:
             return {...state, changedCard: action.changedCard}
+        // return {...state, cards: state.cards.map(card => card._id === action.cardId ? {...card, question: action.newQuestion} : card)}
         default:
             return state
     }

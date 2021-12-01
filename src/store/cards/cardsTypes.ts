@@ -12,7 +12,9 @@ import {
     fetchMax,
     fetchSortCards,
     fetchCardQuestion,
-    fetchCardAnswer, fetchCardTotalCount
+    fetchCardAnswer,
+    fetchCardTotalCount,
+    setSearchCard, fetchUserId
 } from "./cardsActions";
 
 
@@ -27,11 +29,13 @@ export enum CardsEnum {
     SORT_CARDS = 'CARDS/FETCH_SORT_CARDS',
     QUEST = 'CARDS/FETCH_CARD_QUESTION',
     ANSWER = 'CARDS/FETCH_CARD_ANSWER',
+    SEARCH_CARD = 'CARDS/SET_SEARCH_CARD_VALUE',
     SET_CARD = 'CARDS/SET_CARD',
     DELETE_CARD = 'CARDS/DELETE_CARD',
     UPDATE_CARD = 'CARDS/UPDATE_CARD',
     FETCHING = 'CARDS/SET_CARD_IS_FETCHING',
     FETCH_ERROR = 'CARDS/FETCH_CARD_ERROR',
+    USER_ID = 'CARDS/USER_ID',
 }
 
 export type InitialCardsStateType = {
@@ -53,6 +57,8 @@ export type InitialCardsStateType = {
     grade: number
     shots: number
     _id: string
+    searchTerm: string
+    user_id: string
 
     isFetching: boolean
     error: string
@@ -68,6 +74,18 @@ export type GetCardsType = {
     page: number,
     pageCount: number,
     _id?: string,
+}
+
+export type CardType = {
+    answer: string
+    question: string
+    cardsPack_id: string
+    grade: number
+    shots: number
+    user_id: string
+    created: string
+    updated: string
+    _id: string
 }
 
 export type PostCardType = {
@@ -100,6 +118,8 @@ export type RemoveCardAction = ReturnType<typeof removeCard>
 export type UpdateCardAction = ReturnType<typeof updateCard>
 export type SetCardIsFetchingAction = ReturnType<typeof setCardIsFetching>
 export type FetchCardErrorAction = ReturnType<typeof fetchCardError>
+export type SetSearchCardAction = ReturnType<typeof setSearchCard>
+export type FetchUserIdAction = ReturnType<typeof fetchUserId>
 
 export type CardActions =
     FetchCardsAction
@@ -117,5 +137,7 @@ export type CardActions =
     | UpdateCardAction
     | SetCardIsFetchingAction
     | FetchCardErrorAction
+    | SetSearchCardAction
+    | FetchUserIdAction
 
 
